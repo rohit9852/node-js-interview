@@ -1,0 +1,499 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<title>Node.js Senior Interview Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: interview field guide. Chapter rail on the left; each question reads top-down like a prep card:
+   the question → what to say → plain words → watch it run → full explanation → follow-ups → traps.
+   Node green is the brand ink; highlighter yellow marks "what just happened". */
+:root{
+  --bg:#EEF1EC; --surface:#FFFFFF; --surface2:#F5F7F3; --line:#D4DBD0;
+  --ink:#141A14; --muted:#56614F; --faint:#8A9585;
+  --accent:#2F7D32; --accent-ink:#1E5A21; --accent-soft:#DFF0DA;
+  --mark:#FFD84A; --mark-soft:#FFF3BF; --mark-ink:#2E2400;
+  --core:#2F7D32; --senior:#A86A0C; --deep:#B03A55;
+  --console-bg:#10160F; --console-ink:#D7E8D2; --console-dim:#7F9579;
+  --code-bg:#F6F8F4; --code-ink:#1D261C; --code-cm:#6B7866; --code-kw:#8A2BB0; --code-str:#0F7A5A; --code-num:#B5480C;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0C110C; --surface:#141B14; --surface2:#19221A; --line:#2A362A;
+  --ink:#E4ECE1; --muted:#9BAA96; --faint:#6E7D69;
+  --accent:#7BC86F; --accent-ink:#A6E09B; --accent-soft:#1D3020;
+  --mark:#E9C640; --mark-soft:#3A3212; --mark-ink:#1C1600;
+  --core:#7BC86F; --senior:#E3A945; --deep:#F07A93;
+  --console-bg:#070A07; --console-ink:#D7E8D2; --console-dim:#6E846A;
+  --code-bg:#10170F; --code-ink:#D9E2D6; --code-cm:#7D8A79; --code-kw:#D49BFF; --code-str:#6FD3A6; --code-num:#F2A46B;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0C110C; --surface:#141B14; --surface2:#19221A; --line:#2A362A;
+  --ink:#E4ECE1; --muted:#9BAA96; --faint:#6E7D69;
+  --accent:#7BC86F; --accent-ink:#A6E09B; --accent-soft:#1D3020;
+  --mark:#E9C640; --mark-soft:#3A3212; --mark-ink:#1C1600;
+  --core:#7BC86F; --senior:#E3A945; --deep:#F07A93;
+  --console-bg:#070A07; --console-ink:#D7E8D2; --console-dim:#6E846A;
+  --code-bg:#10170F; --code-ink:#D9E2D6; --code-cm:#7D8A79; --code-kw:#D49BFF; --code-str:#6FD3A6; --code-num:#F2A46B;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15.5px;line-height:1.6;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--surface2);border:1px solid var(--line);border-radius:4px;padding:0 4px;word-break:break-word}
+.app{display:grid;grid-template-columns:304px minmax(0,1fr);height:100%}
+
+/* rail */
+.rail{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.brand{padding:18px 18px 12px;border-bottom:1px solid var(--line)}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:21px;letter-spacing:-.01em;display:block;line-height:1.1}
+.brand b span{color:var(--accent)}
+.brand small{font-size:12.5px;color:var(--muted)}
+.prog{height:4px;background:var(--surface2);border-radius:4px;margin-top:10px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.progtxt{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-top:4px}
+.search{padding:10px 14px;border-bottom:1px solid var(--line)}
+.search input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--ink);font:inherit;font-size:14px}
+.chs{overflow:auto;flex:1;padding:4px 0 30px}
+.ch{border-bottom:1px solid var(--line)}
+.chhead{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;background:none;border:0;padding:10px 16px;cursor:pointer}
+.chhead:hover{background:var(--surface2)}
+.chhead .n{font-family:var(--f-mono);font-size:11.5px;color:var(--accent);font-weight:600;flex:none;width:24px}
+.chhead .t{font-size:13.5px;font-weight:600;line-height:1.3;flex:1}
+.chhead .c{font-family:var(--f-mono);font-size:10.5px;color:var(--faint)}
+.qlist{list-style:none;margin:0;padding:0 0 8px}
+.qlist a{display:flex;gap:8px;align-items:baseline;padding:4px 16px 4px 22px;color:var(--ink);text-decoration:none;font-size:13.5px;line-height:1.35}
+.qlist a:hover{background:var(--surface2)}
+.qlist a[aria-current="true"]{background:var(--mark-soft);box-shadow:inset 3px 0 0 var(--mark)}
+.qlist .qn{font-family:var(--f-mono);font-size:11px;color:var(--muted);width:34px;flex:none}
+.qlist .done{color:var(--accent);font-size:11px;flex:none;width:10px}
+.lv{width:7px;height:7px;border-radius:50%;flex:none;transform:translateY(-1px)}
+.lv-Core{background:var(--core)} .lv-Senior{background:var(--senior)} .lv-Deep{background:var(--deep)}
+.railfoot{padding:10px 14px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap}
+.railfoot button{flex:1;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.railfoot button[aria-pressed="true"]{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+
+/* main */
+.main{overflow:auto;min-width:0}
+.topbar{display:none}
+.page{max-width:1000px;margin:0 auto;padding-block:28px 80px;padding-left:max(28px, env(safe-area-inset-left,0px));padding-right:max(28px, env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.pill{border:1px solid var(--line);border-radius:999px;padding:1px 9px;text-transform:none;letter-spacing:0;font-family:var(--f-body);font-size:12.5px;color:var(--ink);background:var(--surface)}
+.pill.l-Core{color:var(--core);border-color:currentColor}.pill.l-Senior{color:var(--senior);border-color:currentColor}.pill.l-Deep{color:var(--deep);border-color:currentColor}
+.tag{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);text-transform:none;letter-spacing:0}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 18px;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:34px 0 12px;text-wrap:balance}
+h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px;font-weight:600}
+.asked{font-family:var(--f-display);font-weight:500;font-size:clamp(18px,2.2vw,22px);line-height:1.35;border-left:4px solid var(--accent);padding:4px 0 4px 16px;margin:0 0 22px;max-width:62ch;text-wrap:pretty}
+.cards{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin-bottom:8px}
+.card{border-radius:var(--r);padding:16px 18px;min-width:0}
+.card p{margin:0}
+.say{background:var(--surface);border:1px solid var(--line)}
+.say h3{color:var(--accent)}
+.say p{font-size:16px}
+.plain{background:var(--mark-soft);border:1px solid color-mix(in srgb,var(--mark) 55%,transparent)}
+.reveal{margin-top:10px;background:var(--accent);color:var(--surface);border:0;border-radius:7px;padding:6px 12px;cursor:pointer;font-size:13.5px}
+.hidden-ans p{filter:blur(6px);user-select:none}
+.prose p{margin:0 0 12px;max-width:74ch}
+.prose ul{margin:0 0 12px;padding-left:20px;max-width:74ch}
+.prose li{margin:3px 0}
+.prose h4{font-family:var(--f-display);font-weight:700;font-size:18px;margin:22px 0 8px}
+.note{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;max-width:78ch}
+.tbl{overflow-x:auto;margin:0 0 14px}
+.tbl table{border-collapse:collapse;font-size:14px;min-width:420px}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.tbl th{background:var(--surface2);font-weight:600}
+.tbl td{background:var(--surface)}
+.cblock{margin:0 0 14px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--code-bg)}
+.cblock .cap{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);padding:6px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;background:var(--surface)}
+.cblock .cap button{border:0;background:none;color:var(--accent);cursor:pointer;font-size:11.5px;padding:0}
+pre.code{margin:0;font-family:var(--f-mono);font-size:12.8px;line-height:1.6;color:var(--code-ink);overflow:auto;padding:10px 0;tab-size:2;max-height:520px}
+pre.code .ln{display:block;padding:0 14px;white-space:pre;min-width:max-content}
+pre.numbered{counter-reset:ln}
+pre.numbered .ln{padding-left:0}
+pre.numbered .ln::before{counter-increment:ln;content:counter(ln);display:inline-block;width:32px;text-align:right;margin-right:12px;color:var(--faint);font-size:11px}
+pre.code .ln.cur{background:var(--mark);color:var(--mark-ink)}
+pre.code .ln.cur *{color:var(--mark-ink)!important}
+pre.code .ln.cur::before{color:var(--mark-ink)}
+.tk-c{color:var(--code-cm);font-style:italic}.tk-k{color:var(--code-kw)}.tk-s{color:var(--code-str)}.tk-n{color:var(--code-num)}
+
+/* follow-ups & mistakes */
+details.fu{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin-bottom:8px}
+details.fu summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;display:flex;gap:10px}
+details.fu summary::-webkit-details-marker{display:none}
+details.fu summary::before{content:"+";font-family:var(--f-mono);color:var(--accent);width:12px;flex:none}
+details.fu[open] summary::before{content:"−"}
+details.fu .a{padding:0 14px 12px 36px;max-width:78ch}
+.traps{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.traps li{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--deep);border-radius:0 8px 8px 0;padding:8px 12px;max-width:80ch}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.btn.on{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+.pager a{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:12px 14px;text-decoration:none;color:var(--ink);min-width:0}
+.pager a small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:11px}
+.pager a.next{text-align:right}
+
+/* player */
+.player{margin:22px 0 6px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.ptop{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line)}
+.ptop b{font-family:var(--f-display);font-weight:700;font-size:16px}
+.ptop span{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+.pcode{border-right:1px solid var(--line);background:var(--code-bg);min-width:0}
+.pcode pre.code{max-height:430px}
+.pviz{min-width:0;display:flex;flex-direction:column}
+.lanes{padding:12px;display:flex;flex-direction:column;gap:10px;flex:1;background:radial-gradient(circle at 1px 1px, color-mix(in srgb,var(--faint) 30%,transparent) 1px, transparent 1.2px) 0 0/16px 16px, var(--surface2)}
+.lane{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:start}
+.lane .ln-name{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);padding-top:6px;line-height:1.3}
+.lane .ln-name small{display:block;color:var(--faint);font-size:10px}
+.items{display:flex;flex-wrap:wrap;gap:5px;min-height:32px;align-items:center;padding:3px;border:1px dashed var(--line);border-radius:8px;background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.items.stack{flex-direction:column-reverse;align-items:stretch;max-width:240px}
+.items.queue{flex-wrap:nowrap;overflow-x:auto}
+.it{font-family:var(--f-mono);font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:nowrap;animation:pop .28s ease-out}
+.it.new{background:var(--mark);border-color:var(--mark);color:var(--mark-ink)}
+.items.stack .it:last-child{box-shadow:inset 3px 0 0 var(--accent)}
+.items.queue .it:first-child{box-shadow:inset 0 -2px 0 var(--accent)}
+.items.box .it{border-radius:999px}
+.items .empty{font-family:var(--f-mono);font-size:11px;color:var(--faint);padding:0 6px}
+table.kv{border-collapse:collapse;font-family:var(--f-mono);font-size:12px}
+table.kv td{border:1px solid var(--line);padding:2px 8px;background:var(--surface);white-space:nowrap}
+table.kv td:first-child{color:var(--muted);background:var(--surface2)}
+table.kv tr.new td{background:var(--mark);color:var(--mark-ink)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
+.console{background:var(--console-bg);color:var(--console-ink);font-family:var(--f-mono);font-size:12.5px;padding:8px 12px;min-height:58px;max-height:160px;overflow:auto;border-top:1px solid var(--line)}
+.console .lbl{color:var(--console-dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em}
+.console div.o{white-space:pre-wrap;word-break:break-word}
+.console div.o.new{color:var(--mark)}
+.console div.o::before{content:"› ";color:var(--console-dim)}
+.caption{padding:12px 14px;border-top:1px solid var(--line);min-height:70px;font-size:15px;line-height:1.5}
+.caption .ln{font-family:var(--f-mono);font-size:11px;color:var(--muted);display:block}
+.controls{display:flex;align-items:center;gap:8px;padding:9px 12px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cbtn{width:34px;height:32px;border:1px solid var(--line);border-radius:7px;background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.cbtn svg{width:15px;height:15px;fill:currentColor}
+.cbtn.play{background:var(--ink);color:var(--surface);border-color:var(--ink);width:42px}
+.scrub{flex:1;min-width:110px;accent-color:var(--accent)}
+.stepn{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:64px;text-align:right;font-variant-numeric:tabular-nums}
+.speed{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:6px;background:var(--surface2);padding:3px 4px}
+.verified{font-family:var(--f-mono);font-size:11px;color:var(--accent)}
+
+/* home */
+.hero p{max-width:66ch;color:var(--muted);font-size:16.5px}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-top:20px}
+.chgrid a{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:4px}
+.chgrid a:hover{border-color:var(--accent)}
+.chgrid .n{font-family:var(--f-mono);font-size:12px;color:var(--accent)}
+.chgrid .t{font-family:var(--f-display);font-weight:700;font-size:19px;line-height:1.2}
+.chgrid .d{font-size:13.5px;color:var(--muted)}
+.chgrid .bar{height:3px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:6px}
+.chgrid .bar i{display:block;height:100%;background:var(--accent)}
+.howto{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:8px}
+.howto div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font-size:14px}
+.howto b{display:block;font-family:var(--f-display);font-size:16px;margin-bottom:2px}
+.loading{padding:60px 0;color:var(--muted)}
+
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:fixed;inset:0 auto 0 0;width:min(320px,88vw);z-index:20;transform:translateX(-105%);transition:transform .25s;box-shadow:0 10px 40px rgba(0,0,0,.25);padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px)}
+  .rail.open{transform:none}
+  .topbar{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line);padding-block:8px;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));align-items:center;gap:10px}
+  .topbar button{border:1px solid var(--line);background:var(--surface2);border-radius:8px;padding:5px 10px;font-size:13px;flex:none}
+  .topbar b{font-family:var(--f-display);font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .page{padding-block:18px 60px;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+  .cards{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:1fr}
+  .pcode{border-right:0;border-bottom:1px solid var(--line)}
+  .pcode pre.code{max-height:260px}
+  .lane{grid-template-columns:1fr;gap:3px}
+  .lane .ln-name{padding-top:0}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:15}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+
+<div class="app">
+  <nav class="rail" id="rail" aria-label="Chapters">
+    <div class="brand"><b>Node.js <span>Senior</span> Interview Guide</b><small id="brandSub">Loading…</small>
+      <div class="prog" aria-hidden="true"><i id="progBar"></i></div><div class="progtxt" id="progTxt"></div></div>
+    <div class="search"><input id="q" type="search" placeholder="Search questions or tags" aria-label="Search questions"></div>
+    <div class="chs" id="chs"></div>
+    <div class="railfoot">
+      <button id="homeBtn" type="button">All chapters</button>
+      <button id="practiceBtn" type="button" aria-pressed="false">Practice mode</button>
+      <button id="themeBtn" type="button">Theme</button>
+    </div>
+  </nav>
+  <div class="scrim" id="scrim" hidden></div>
+  <main class="main" id="main">
+    <div class="topbar"><button id="menuBtn" type="button" aria-label="Open chapters">☰ Chapters</button><b id="topTitle">Node.js Senior Interview Guide</b></div>
+    <div class="page" id="page"><div class="loading">Loading the guide…</div></div>
+  </main>
+</div>
+
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+const inline = (s) => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+
+let INDEX = null; const CACHE = {}; let CUR = null; let player = null;
+let DONE = new Set((store.get("ng-done") || "").split(",").filter(Boolean));
+let PRACTICE = store.get("ng-practice") === "1";
+
+/* theme */
+(function () {
+  const t = store.get("ng-theme"); if (t) document.documentElement.setAttribute("data-theme", t);
+  $("#themeBtn").onclick = () => {
+    const cur = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const nx = cur === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", nx); store.set("ng-theme", nx);
+  };
+})();
+$("#practiceBtn").setAttribute("aria-pressed", PRACTICE);
+$("#practiceBtn").onclick = () => { PRACTICE = !PRACTICE; store.set("ng-practice", PRACTICE ? "1" : "0"); $("#practiceBtn").setAttribute("aria-pressed", PRACTICE); route(); };
+$("#homeBtn").onclick = () => { location.hash = "home"; closeRail(); };
+$("#menuBtn").onclick = () => { $("#rail").classList.add("open"); $("#scrim").hidden = false; };
+$("#scrim").onclick = closeRail;
+function closeRail() { $("#rail").classList.remove("open"); $("#scrim").hidden = true; }
+
+async function loadChapter(num) {
+  if (CACHE[num]) return CACHE[num];
+  const r = await fetch("data/c" + String(num).padStart(2, "0") + ".json");
+  return (CACHE[num] = await r.json());
+}
+const allQs = () => INDEX.chapters.flatMap((c) => c.questions.map((q) => ({ ...q, ch: c.num })));
+const lvKey = (l) => (l === "Deep dive" ? "Deep" : l);
+
+function updateProgress() {
+  const total = allQs().length;
+  const d = allQs().filter((q) => DONE.has(q.id)).length;
+  $("#progBar").style.width = (total ? (100 * d) / total : 0) + "%";
+  $("#progTxt").textContent = `${d} of ${total} marked as ready`;
+}
+
+/* rail */
+function renderRail(filter) {
+  const f = (filter || "").trim().toLowerCase();
+  const open = new Set((store.get("ng-open") || "").split(",").filter(Boolean));
+  if (CUR) open.add(String(CUR.split(".")[0]));
+  let html = "";
+  for (const c of INDEX.chapters) {
+    const qs = c.questions.filter((q) => !f || (q.id + " " + q.title + " " + (q.tags || []).join(" ")).toLowerCase().includes(f));
+    if (f && !qs.length) continue;
+    const isOpen = f || open.has(String(c.num));
+    const dn = c.questions.filter((q) => DONE.has(q.id)).length;
+    html += `<div class="ch"><button class="chhead" type="button" data-ch="${c.num}" aria-expanded="${!!isOpen}"><span class="n">${String(c.num).padStart(2, "0")}</span><span class="t">${esc(c.title)}</span><span class="c">${dn}/${c.questions.length}</span></button>`;
+    if (isOpen) html += `<ul class="qlist">${qs.map((q) => `<li><a href="#q${q.id.replace(".", "-")}" data-id="${q.id}" ${q.id === CUR ? 'aria-current="true"' : ""}><span class="qn">${q.id}</span><span class="lv lv-${lvKey(q.level)}" title="${esc(q.level)}"></span><span style="flex:1">${esc(q.title)}</span><span class="done">${DONE.has(q.id) ? "✓" : ""}</span></a></li>`).join("")}</ul>`;
+    html += `</div>`;
+  }
+  $("#chs").innerHTML = html || `<p style="padding:16px;color:var(--muted)">Nothing matches “${esc(f)}”.</p>`;
+}
+$("#chs").addEventListener("click", (e) => {
+  const h = e.target.closest(".chhead");
+  if (h) {
+    const open = new Set((store.get("ng-open") || "").split(",").filter(Boolean));
+    const k = h.dataset.ch; if (h.getAttribute("aria-expanded") === "true") open.delete(k); else open.add(k);
+    store.set("ng-open", [...open].join(",")); renderRail($("#q").value);
+  }
+  if (e.target.closest("a")) closeRail();
+});
+$("#q").addEventListener("input", (e) => renderRail(e.target.value));
+
+/* routing */
+window.addEventListener("hashchange", route);
+function route() {
+  const h = location.hash.slice(1);
+  const m = h.match(/^q(\d+)-(\d+)$/);
+  if (m) return showQuestion(m[1] + "." + m[2]);
+  const c = h.match(/^c(\d+)$/);
+  if (c) { const ch = INDEX.chapters.find((x) => x.num === +c[1]); if (ch) return showQuestion(ch.questions[0].id); }
+  return showHome();
+}
+
+function showHome() {
+  CUR = null; if (player) player.stop();
+  renderRail($("#q").value); $("#topTitle").textContent = "Node.js Senior Interview Guide";
+  const total = allQs().length, anims = INDEX.chapters.reduce((s, c) => s + c.anims, 0);
+  $("#page").innerHTML = `
+    <div class="hero"><div class="eyebrow">Senior Node.js backend · ${INDEX.chapters.length} chapters · ${total} questions · ${anims} animations</div>
+    <h1>Node.js Senior Interview Guide</h1>
+    <p>Node.js internals and everyday backend coding, as interviewers actually ask them. Each question gives you the answer to say out loud, the idea in plain words, a step-by-step animation where something happens over time, a full explanation with code, likely follow-ups and the traps candidates fall into.</p></div>
+    <div class="howto">
+      <div><b>Say it</b>Read the green card aloud until you can say it without looking.</div>
+      <div><b>Watch it</b>Step through the animation. Ordering puzzles were run in real Node to check the output.</div>
+      <div><b>Practice mode</b>Hides the answers until you've tried. Turn it on from the sidebar.</div>
+      <div><b>Mark as ready</b>Tick questions you can answer and watch your progress fill up.</div>
+    </div>
+    <h2>Chapters</h2>
+    <div class="chgrid">${INDEX.chapters.map((c) => { const dn = c.questions.filter((q) => DONE.has(q.id)).length; return `<a href="#q${c.questions[0].id.replace(".", "-")}"><span class="n">CHAPTER ${String(c.num).padStart(2, "0")} · ${c.questions.length} questions</span><span class="t">${esc(c.title)}</span><span class="d">${inline(c.intro.split(". ")[0])}.</span><span class="bar"><i style="width:${(100 * dn) / c.questions.length}%"></i></span></a>`; }).join("")}</div>`;
+  $("#main").scrollTop = 0;
+}
+
+/* syntax highlight */
+const KW = new Set("var let const function return if else for while do break continue new class this of in true false null undefined typeof instanceof switch case default throw try catch finally static extends super async await import from export require module exports yield delete void interface type implements public private protected readonly enum as keyof".split(" "));
+function highlight(line, lang) {
+  if (lang === "bash" || lang === "text") return line.startsWith("#") ? `<span class="tk-c">${esc(line)}</span>` : esc(line);
+  let out = "", i = 0; const n = line.length;
+  while (i < n) {
+    const ch = line[i];
+    if (ch === "/" && line[i + 1] === "/") { out += `<span class="tk-c">${esc(line.slice(i))}</span>`; break; }
+    if (lang === "sql" && ch === "-" && line[i + 1] === "-") { out += `<span class="tk-c">${esc(line.slice(i))}</span>`; break; }
+    if (ch === '"' || ch === "'" || ch === "`") { let j = i + 1; while (j < n && line[j] !== ch) { if (line[j] === "\\") j++; j++; } out += `<span class="tk-s">${esc(line.slice(i, j + 1))}</span>`; i = j + 1; continue; }
+    if (/[0-9]/.test(ch) && !/[\w]/.test(line[i - 1] || "")) { let j = i; while (j < n && /[0-9._xa-fA-Fn]/.test(line[j])) j++; out += `<span class="tk-n">${esc(line.slice(i, j))}</span>`; i = j; continue; }
+    if (/[A-Za-z_$]/.test(ch)) { let j = i; while (j < n && /[\w$]/.test(line[j])) j++; const w = line.slice(i, j); out += (lang !== "json" && KW.has(w)) || (lang === "sql" && /^[A-Z]+$/.test(w)) ? `<span class="tk-k">${w}</span>` : esc(w); i = j; continue; }
+    out += esc(ch); i++;
+  }
+  return out;
+}
+const codeHTML = (src, lang) => src.split("\n").map((l) => `<span class="ln">${highlight(l, lang) || " "}</span>`).join("");
+
+function blocksHTML(blocks) {
+  return blocks.map((b, i) => {
+    if (b.h) return `<h4>${inline(b.h)}</h4>`;
+    if (b.p) return `<p>${inline(b.p)}</p>`;
+    if (b.list) return `<ul>${b.list.map((x) => `<li>${inline(x)}</li>`).join("")}</ul>`;
+    if (b.note) return `<div class="note">${inline(b.note)}</div>`;
+    if (b.table) return `<div class="tbl"><table><thead><tr>${b.table.head.map((h) => `<th>${inline(h)}</th>`).join("")}</tr></thead><tbody>${b.table.rows.map((r) => `<tr>${r.map((c) => `<td>${inline(String(c))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    if (b.code != null) return `<div class="cblock"><div class="cap"><span>${esc(b.caption || (b.lang || "js").toUpperCase())}</span><button type="button" data-copy="${i}">Copy</button></div><pre class="code">${codeHTML(b.code, b.lang || "js")}</pre></div>`;
+    return "";
+  }).join("");
+}
+
+async function showQuestion(id) {
+  const meta = allQs().find((q) => q.id === id); if (!meta) return showHome();
+  CUR = id; renderRail($("#q").value);
+  const a = document.querySelector(`.qlist a[data-id="${id}"]`); if (a) a.scrollIntoView({ block: "nearest" });
+  $("#topTitle").textContent = id + " " + meta.title;
+  if (!CACHE[meta.ch]) $("#page").innerHTML = `<div class="loading">Loading chapter ${meta.ch}…</div>`;
+  const ch = await loadChapter(meta.ch); if (CUR !== id) return;
+  const q = ch.questions.find((x) => x.id === id);
+  const list = allQs(); const k = list.findIndex((x) => x.id === id); const prev = list[k - 1], next = list[k + 1];
+  const hid = PRACTICE ? " hidden-ans" : "";
+  $("#page").innerHTML = `
+    <div class="eyebrow"><span>Chapter ${String(ch.num).padStart(2, "0")} · ${esc(ch.title)} · ${q.id}</span><span class="pill l-${lvKey(q.level)}">${esc(q.level)}</span>${(q.tags || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>
+    <h1>${esc(q.title)}</h1>
+    <p class="asked">“${inline(q.question)}”</p>
+    <div class="cards">
+      <div class="card say${hid}" id="sayCard"><h3>Say this in the interview</h3><p>${inline(q.short)}</p>${PRACTICE ? `<button class="reveal" type="button" id="revealBtn">Show the answer</button>` : ""}</div>
+      <div class="card plain${hid}" id="plainCard"><h3>In plain words</h3><p>${inline(q.simple)}</p></div>
+    </div>
+    <div id="animHost"></div>
+    <h2>Full explanation</h2>
+    <div class="prose" id="explain">${blocksHTML(q.explain)}</div>
+    ${q.followups && q.followups.length ? `<h2>Follow-up questions</h2>${q.followups.map((f) => `<details class="fu"><summary>${inline(f.q)}</summary><div class="a">${inline(f.a)}</div></details>`).join("")}` : ""}
+    ${q.mistakes && q.mistakes.length ? `<h2>Traps to avoid</h2><ul class="traps">${q.mistakes.map((m) => `<li>${inline(m)}</li>`).join("")}</ul>` : ""}
+    <div class="actions"><button class="btn${DONE.has(id) ? " on" : ""}" type="button" id="doneBtn">${DONE.has(id) ? "✓ Ready for this one" : "Mark as ready"}</button></div>
+    <nav class="pager">${prev ? `<a href="#q${prev.id.replace(".", "-")}"><small>← ${prev.id}</small>${esc(prev.title)}</a>` : "<span></span>"}${next ? `<a class="next" href="#q${next.id.replace(".", "-")}"><small>${next.id} →</small>${esc(next.title)}</a>` : "<span></span>"}</nav>`;
+  if (PRACTICE) $("#revealBtn").onclick = () => { $("#sayCard").classList.remove("hidden-ans"); $("#plainCard").classList.remove("hidden-ans"); $("#revealBtn").remove(); };
+  $("#doneBtn").onclick = () => {
+    if (DONE.has(id)) DONE.delete(id); else DONE.add(id);
+    store.set("ng-done", [...DONE].join(","));
+    const b = $("#doneBtn"); b.classList.toggle("on", DONE.has(id)); b.textContent = DONE.has(id) ? "✓ Ready for this one" : "Mark as ready";
+    renderRail($("#q").value); updateProgress();
+  };
+  $("#explain").querySelectorAll("[data-copy]").forEach((b) => (b.onclick = () => {
+    const txt = q.explain[+b.dataset.copy].code;
+    try { navigator.clipboard.writeText(txt).then(() => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1200); }, () => (b.textContent = "Select to copy")); } catch (e) { b.textContent = "Select to copy"; }
+  }));
+  if (player) player.stop();
+  player = q.anim ? new Player($("#animHost"), q.anim) : null;
+  $("#main").scrollTop = 0;
+}
+
+/* animation player */
+const ICON = {
+  first: '<svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg>', prev: '<svg viewBox="0 0 16 16"><path d="M12 2v12L4 8z"/></svg>',
+  next: '<svg viewBox="0 0 16 16"><path d="M4 2v12l8-6z"/></svg>', last: '<svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2v12l8-6z"/></svg>',
+  play: '<svg viewBox="0 0 16 16"><path d="M4 2v12l10-6z"/></svg>', pause: '<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>',
+};
+const KIND_HINT = { stack: "top ↑", queue: "front ←", box: "", kv: "" };
+class Player {
+  constructor(host, a) {
+    this.a = a; this.k = 0; this.timer = null; this.speed = +(store.get("ng-speed") || 1400);
+    host.innerHTML = `<div class="player">
+      <div class="ptop"><b>${esc(a.title)}</b><span>${a.verify ? '<span class="verified">✓ output checked in real Node</span>' : "step-by-step"}</span></div>
+      <div class="pgrid"><div class="pcode"><pre class="code numbered" id="pc">${codeHTML(a.code, "js")}</pre></div>
+        <div class="pviz"><div class="lanes" id="lanes"></div><div class="console" id="con"></div></div></div>
+      <div class="caption" id="cap" aria-live="polite"></div>
+      <div class="controls">
+        <button class="cbtn" type="button" data-a="first" aria-label="First step">${ICON.first}</button>
+        <button class="cbtn" type="button" data-a="prev" aria-label="Previous step">${ICON.prev}</button>
+        <button class="cbtn play" type="button" data-a="play" aria-label="Play">${ICON.play}</button>
+        <button class="cbtn" type="button" data-a="next" aria-label="Next step">${ICON.next}</button>
+        <button class="cbtn" type="button" data-a="last" aria-label="Last step">${ICON.last}</button>
+        <input class="scrub" id="scrub" type="range" min="0" max="${a.steps.length - 1}" value="0" aria-label="Step">
+        <span class="stepn" id="stepn"></span>
+        <select class="speed" id="speed" aria-label="Speed"><option value="2600">0.5×</option><option value="1400">1×</option><option value="700">2×</option></select>
+      </div></div>`;
+    this.h = host;
+    host.querySelectorAll(".cbtn").forEach((b) => (b.onclick = () => this.act(b.dataset.a)));
+    $("#speed", host).value = String(this.speed);
+    $("#speed", host).onchange = (e) => { this.speed = +e.target.value; store.set("ng-speed", this.speed); if (this.timer) { this.stop(); this.play(); } };
+    $("#scrub", host).oninput = (e) => { this.stop(); this.icon(); this.go(+e.target.value); };
+    host.querySelector(".player").addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); this.act("next"); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); this.act("prev"); }
+    });
+    this.go(0);
+  }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  icon() { const b = this.h.querySelector(".cbtn.play"); b.innerHTML = this.timer ? ICON.pause : ICON.play; b.setAttribute("aria-label", this.timer ? "Pause" : "Play"); }
+  play() { this.timer = setInterval(() => { if (!document.body.contains(this.h) || this.k >= this.a.steps.length - 1) { this.stop(); this.icon(); return; } this.go(this.k + 1); }, this.speed); this.icon(); }
+  act(x) {
+    const n = this.a.steps.length;
+    if (x === "play") { if (this.timer) this.stop(); else { if (this.k >= n - 1) this.go(0); this.play(); } this.icon(); return; }
+    this.stop(); this.icon();
+    if (x === "first") this.go(0); if (x === "last") this.go(n - 1);
+    if (x === "prev") this.go(Math.max(0, this.k - 1)); if (x === "next") this.go(Math.min(n - 1, this.k + 1));
+  }
+  go(k) {
+    this.k = k;
+    const s = this.a.steps[k], p = k > 0 ? this.a.steps[k - 1] : null;
+    $("#scrub", this.h).value = String(k);
+    $("#stepn", this.h).textContent = `${k + 1} / ${this.a.steps.length}`;
+    // lanes
+    const lanesHTML = this.a.lanes.map((ln) => {
+      const items = (s.lanes && s.lanes[ln.name]) || [];
+      const prevItems = (p && p.lanes && p.lanes[ln.name]) || [];
+      const pc = {}; prevItems.forEach((x) => (pc[x] = (pc[x] || 0) + 1));
+      const isNew = (x) => { if (!p) return false; if (pc[x]) { pc[x]--; return false; } return true; };
+      let body;
+      if (ln.kind === "kv") {
+        body = items.length ? `<table class="kv">${items.map((x) => { const i = String(x).indexOf(":"); const kk = i > 0 ? x.slice(0, i) : x, vv = i > 0 ? x.slice(i + 1).trim() : ""; return `<tr class="${isNew(x) ? "new" : ""}"><td>${esc(kk)}</td><td>${esc(vv)}</td></tr>`; }).join("")}</table>` : `<span class="empty">empty</span>`;
+        return `<div class="lane"><div class="ln-name">${esc(ln.name)}</div><div>${body}</div></div>`;
+      }
+      body = items.length ? items.map((x) => `<span class="it${isNew(x) ? " new" : ""}">${esc(x)}</span>`).join("") : `<span class="empty">empty</span>`;
+      return `<div class="lane"><div class="ln-name">${esc(ln.name)}${KIND_HINT[ln.kind] && items.length ? `<small>${KIND_HINT[ln.kind]}</small>` : ""}</div><div class="items ${ln.kind}">${body}</div></div>`;
+    }).join("");
+    $("#lanes", this.h).innerHTML = lanesHTML;
+    // console
+    const out = s.out || [], pout = (p && p.out) || [];
+    $("#con", this.h).innerHTML = `<div class="lbl">Console output</div>` + (out.length ? out.map((o, i) => `<div class="o${i >= pout.length && p ? " new" : ""}">${esc(o)}</div>`).join("") : `<div style="color:var(--console-dim)">(nothing printed yet)</div>`);
+    const con = $("#con", this.h); con.scrollTop = con.scrollHeight;
+    // caption
+    const codeLines = this.a.code.split("\n");
+    $("#cap", this.h).innerHTML = (s.line ? `<span class="ln">Line ${s.line}: ${esc((codeLines[s.line - 1] || "").trim().slice(0, 80))}</span>` : `<span class="ln">Event loop</span>`) + inline(s.note) + (k === this.a.steps.length - 1 ? ` <b>Done.</b>` : "");
+    // code line
+    const pre = $("#pc", this.h);
+    pre.querySelectorAll(".ln.cur").forEach((x) => x.classList.remove("cur"));
+    if (s.line) { const ln = pre.children[s.line - 1]; if (ln) { ln.classList.add("cur"); const top = ln.offsetTop - pre.offsetTop; if (top < pre.scrollTop + 10 || top > pre.scrollTop + pre.clientHeight - 30) pre.scrollTop = Math.max(0, top - pre.clientHeight / 3); } }
+  }
+}
+
+/* boot */
+(async function () {
+  try { INDEX = await (await fetch("data/index.json")).json(); }
+  catch (e) { $("#page").innerHTML = `<p class="loading">The guide data did not load. Reload the page to try again.</p>`; return; }
+  const total = allQs().length;
+  $("#brandSub").textContent = `${INDEX.chapters.length} chapters · ${total} questions`;
+  updateProgress(); renderRail(""); route();
+})();
+</script>
+
+</body></html>
